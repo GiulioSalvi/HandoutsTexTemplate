@@ -1,0 +1,274 @@
+% HandoutsTexTemplate
+% Copyright (C) 2026 Giulio Salvi
+%
+% This is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% This software is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+% Match hyperlink colors to the template accent palette.
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkcolor,
+  urlcolor=linkcolor,
+  citecolor=linkcolor
+}
+
+% Cover font uses normal, readable interword spacing.
+\NewDocumentCommand{\covertitle}{m}{%
+  {\Huge\bfseries #1\par}%
+}
+
+% Keep box titles and counter tags on the same line.
+\newcommand{\boxtitle}[2]{#1\hspace{0.55em}#2}
+\newcommand{\boxcountertag}[1]{%
+  \hfill\nobreak\mbox{\normalfont #1}%
+}
+\newcommand{\boxtitlewithlabel}[3]{%
+  \boxtitle{#1}{#2}\boxcountertag{#3}%
+}
+\newcommand{\boxplainwithlabel}[2]{%
+  #1\boxcountertag{#2}%
+}
+\newcommand{\boxtitlewithname}[4]{%
+  \ifstrempty{#3}{%
+    \boxtitlewithlabel{#1}{#2}{#4}%
+  }{%
+    \boxtitlewithlabel{#1}{#2 of #3}{#4}%
+  }%
+}
+\newcommand{\boxtitleorfallback}[4]{%
+  \ifstrempty{#3}{%
+    \boxtitlewithlabel{#1}{#2}{#4}%
+  }{%
+    \boxtitlewithlabel{#1}{#3}{#4}%
+  }%
+}
+
+% A deliberate blank page is used only behind the cover.
+\NewDocumentCommand{\blankpage}{}{%
+  \thispagestyle{empty}\null\clearpage
+}
+
+% Native book opening policy, also used by dedication and epigraph pages.
+\makeatletter
+\NewDocumentCommand{\handoutsclearchapterpage}{}{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+}
+\makeatother
+
+% Visible labels follow Babel's selected main language.
+\NewDocumentCommand{\defaultcolophontext}{}{These notes were typeset using \LaTeX{}.}
+\NewDocumentCommand{\prefacename}{}{Preface}
+\NewDocumentCommand{\licensename}{}{License}
+\addto\captionsitalian{%
+  \renewcommand{\defaultcolophontext}{Queste dispense sono state composte con \LaTeX{}.}%
+  \renewcommand{\prefacename}{Prefazione}%
+  \renewcommand{\licensename}{Licenza}%
+}
+\addto\captionsenglish{%
+  \renewcommand{\defaultcolophontext}{These notes were typeset using \LaTeX{}.}%
+  \renewcommand{\prefacename}{Preface}%
+  \renewcommand{\licensename}{License}%
+}
+
+% Draw a simple rectangular border on the cover page.
+\newcommand{\drawcoverborder}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \draw[
+      black!90,
+      line width=1pt
+    ]
+      ($(current page.north west)+(1.8cm,-1.8cm)$)
+      rectangle
+      ($(current page.south east)+(-1.8cm,1.8cm)$);
+  \end{tikzpicture}%
+}
+
+% Real chapters retain the original large opening titles.
+\NewDocumentCommand{\headertitle}{m}{\textit{#1}}
+\titleformat{\chapter}[display]
+  {\normalfont\raggedright}
+  {\bfseries\LARGE\chaptertitlename~\thechapter}
+  {2.5ex}
+  {\bfseries\Huge}
+\titlespacing*{\chapter}{0pt}{0.10\textheight}{0.06\textheight}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.7em}{}
+\titlespacing*{\section}{0pt}{2.5ex plus 1ex minus 0.2ex}{1ex plus 0.2ex}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.7em}{}
+\titlespacing*{\subsection}{0pt}{2ex plus 0.8ex minus 0.2ex}{0.8ex plus 0.2ex}
+
+% Chapters and sections feed the two running headers; starred headings stay native.
+\makeatletter
+\renewcommand{\chaptermark}[1]{%
+  \markboth{\headertitle{%
+    \ifnum\value{secnumdepth}>-1\relax
+      \if@mainmatter\chaptername~\thechapter.\ \fi
+    \fi
+    #1%
+  }}{}%
+}
+\makeatother
+\renewcommand{\sectionmark}[1]{%
+  \markright{\headertitle{%
+    \ifnum\value{secnumdepth}>0\relax\thesection.\ \fi
+    #1%
+  }}%
+}
+
+% Opening pages have a centred footer; blank versos are handled by emptypage.
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{mainmatter}{%
+  \fancyhf{}
+  \fancyhead[LE]{\small\thepage}
+  \fancyhead[RE]{\parbox[b]{0.82\textwidth}{\raggedleft\small\nouppercase{\leftmark}}}
+  \fancyhead[LO]{\parbox[b]{0.82\textwidth}{\raggedright\small\nouppercase{\rightmark}}}
+  \fancyhead[RO]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{frontmattersection}{%
+  \fancyhf{}
+  \fancyhead[LE]{\small\thepage}
+  \fancyhead[RE]{\parbox[b]{0.82\textwidth}{\raggedleft\small\nouppercase{\leftmark}}}
+  \fancyhead[LO]{\parbox[b]{0.82\textwidth}{\raggedright\small\nouppercase{\leftmark}}}
+  \fancyhead[RO]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% Forward optional titles and options to box environments.
+\NewDocumentCommand{\beginbox}{m O{} g}{%
+  \ifstrempty{#2}{%
+    \IfNoValueTF{#3}{\begin{#1}}{\begin{#1}{#3}}%
+  }{%
+    \IfNoValueTF{#3}{\begin{#1}[#2]}{\begin{#1}[#2]{#3}}%
+  }%
+}
+\NewDocumentCommand{\endbox}{m}{\end{#1}}
+
+% Mathtools paired delimiters keep the existing auto-sized shorthand syntax.
+\NewDocumentCommand{\bal}{m}{\mathrm{bal}(#1)}
+\DeclarePairedDelimiter{\handoutsset}{\lbrace}{\rbrace}
+\DeclarePairedDelimiter{\handoutsabs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\handoutsnorm}{\lVert}{\rVert}
+\NewDocumentCommand{\set}{m}{\handoutsset*{#1}}
+\NewDocumentCommand{\abs}{m}{\handoutsabs*{#1}}
+\NewDocumentCommand{\norm}{m}{\handoutsnorm*{#1}}
+
+% Build the shared badge style used by custom lists.
+\newcounter{numberedlistitemctr}
+\newlength{\numberedlistitembadgewidth}
+\newcommand{\numberedlistitembadge}[1]{%
+  \tikz[baseline=(n.base)]{
+    \node[
+      fill=linkcolor,
+      text=white,
+      font=\bfseries\scriptsize,
+      minimum width=1em,
+      minimum height=1em,
+      inner sep=0pt,
+      rounded corners=1pt
+    ] (n) {#1};
+  }%
+}
+\newcommand{\unorderedlistitembadge}{%
+  \numberedlistitembadge{\textbullet}%
+}
+
+% Keep numbered and unordered badge lists aligned the same way.
+\newcommand{\badgelistlayout}{%
+  \setlength{\labelwidth}{\numberedlistitembadgewidth}
+  \setlength{\labelsep}{0.75em}
+  \setlength{\leftmargin}{\dimexpr\labelwidth+\labelsep\relax}
+  \setlength{\itemsep}{0.45em}
+  \setlength{\topsep}{0pt}
+  \setlength{\partopsep}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\listparindent}{0pt}
+  \setlength{\itemindent}{0pt}
+  \setlength{\rightmargin}{0pt}
+}
+\settowidth{\numberedlistitembadgewidth}{\numberedlistitembadge{99}}
+
+% Numbered list with boxed numeric badges.
+\NewDocumentEnvironment{numberedlist}{}{%
+  \setcounter{numberedlistitemctr}{0}%
+  \begin{list}{\numberedlistitembadge{\arabic{numberedlistitemctr}}}{%
+    \usecounter{numberedlistitemctr}
+    \badgelistlayout
+  }%
+  \ignorespaces
+}{%
+  \end{list}\ignorespacesafterend
+}
+
+% Unordered list with the same visual badge style.
+\NewDocumentEnvironment{unorderedlist}{}{%
+  \begin{list}{\unorderedlistitembadge}{%
+    \badgelistlayout
+  }%
+  \ignorespaces
+}{%
+  \end{list}\ignorespacesafterend
+}
+
+% Derivations are just titled numbered badge lists.
+\NewDocumentEnvironment{derivation}{O{\derivationname:}}{%
+  \par\medskip
+  \noindent\textbf{#1}\par\smallskip
+  \begin{numberedlist}
+}{%
+  \end{numberedlist}\par\medskip
+}
+\newcommand{\derivstep}[2]{%
+  \item $\displaystyle #1$\hfill\nobreak\mbox{\textit{(#2)}}%
+}
+
+% Proof cases align a short label on the left and indent the full body.
+\newlength{\proofcaselabelwidth}
+\settowidth{\proofcaselabelwidth}{$(\Leftarrow)$}
+\newcommand{\proofcaselabel}[1]{%
+  \makebox[\proofcaselabelwidth][l]{$#1$}%
+}
+\NewDocumentEnvironment{proofcase}{m}{%
+  \par\medskip
+  \begin{list}{}{%
+    \setlength{\labelwidth}{\proofcaselabelwidth}
+    \setlength{\labelsep}{0.45em}
+    \setlength{\leftmargin}{\dimexpr\labelwidth+\labelsep\relax}
+    \setlength{\itemsep}{0pt}
+    \setlength{\topsep}{0pt}
+    \setlength{\partopsep}{0pt}
+    \setlength{\parsep}{0pt}
+    \setlength{\listparindent}{0pt}
+    \setlength{\itemindent}{0pt}
+    \setlength{\rightmargin}{0pt}
+  }%
+  \item[\proofcaselabel{#1}]%
+  \ignorespaces
+}{%
+  \end{list}\ignorespacesafterend
+}
+
+% Wrap a centered figure with a caption.
+\newcommand{\img}[3][]{%
+  \begin{figure}[H]
+    \centering
+    \includegraphics[#1]{#2}
+    \caption{#3}
+  \end{figure}
+}

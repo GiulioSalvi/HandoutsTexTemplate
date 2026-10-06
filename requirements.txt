@@ -1,0 +1,110 @@
+# Handouts LaTeX Template - TeX Live requirements
+# TeX Live / tlmgr package names, one per line; comments start with #.
+# Verified against the template sources and a LuaLaTeX draft compilation
+# with strikeout and Citeproc support enabled, using TeX Live 2026.
+# TeX Live resolves additional package and platform-specific dependencies.
+# Requires LuaLaTeX and a LaTeX kernel dated 2022-06-01 or later.
+# latex-bin provides the LaTeX formats; latexmk supports the README build.
+#
+# Includes default fonts (lm, lm-math), English/Italian language support,
+# required supporting packages, and conditional strikeout/SVG support.
+# Inkscape is additionally needed for SVG conversion; it is an external tool.
+#
+# Provider mappings for LaTeX names that differ from TeX Live package names:
+#   graphicx -> graphics
+#   array, longtable, tabularx, calc -> tools
+#   amsthm -> amscls
+#   tikz -> pgf
+#   subcaption -> caption
+#   centernot -> oberdiek
+#   scrbase -> koma-script
+
+adjustbox
+algorithm2e
+amscls
+amsmath
+auxhook
+babel
+babel-english
+babel-italian
+bigintcalc
+bitset
+bookmark
+booktabs
+caption
+catchfile
+cleveref
+collectbox
+ctablestack
+emptypage
+environ
+epstopdf-pkg
+etoolbox
+fancyhdr
+fancyvrb
+float
+fontawesome5
+fontspec
+footnotehyper
+framed
+geometry
+gettitlestring
+graphics
+graphics-def
+grfext
+hycolor
+hyperref
+hyphen-english
+hyphen-italian
+ifoddpage
+ifplatform
+iftex
+infwarerr
+intcalc
+koma-script
+kvdefinekeys
+kvoptions
+kvsetkeys
+l3kernel
+l3packages
+latex
+latex-bin
+latexmk
+listings
+lm
+lm-math
+ltxcmds
+lua-ul
+luacolor
+lualatex-math
+luaotfload
+luatexbase
+mathtools
+microtype
+multirow
+oberdiek
+pdfcol
+pdfescape
+pdftexcmds
+pgf
+pgfplots
+ragged2e
+refcount
+relsize
+rerunfilecheck
+setspace
+stringenc
+svg
+tcolorbox
+tikzfill
+titlesec
+tools
+transparent
+trimspaces
+unicode-math
+uniquecounter
+url
+varwidth
+wrapfig
+xcolor
+xkeyval

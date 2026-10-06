@@ -1,0 +1,246 @@
+% HandoutsTexTemplate
+% Copyright (C) 2026 Giulio Salvi
+%
+% This is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% This software is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+% Pandoc template. Generate a standalone .tex file before compiling it.
+\NeedsTeXFormat{LaTeX2e}[2022-06-01]
+\documentclass[
+  $if(fontsize)$$fontsize$$else$11pt$endif$,
+  twoside,
+  $if(openany)$openany$else$openright$endif$
+]{book}
+
+% UTF-8 and OpenType fonts: LuaLaTeX is the supported engine.
+\usepackage{iftex}
+\RequireLuaTeX
+\usepackage{fontspec}
+$if(mainfont)$
+\setmainfont{$mainfont$}[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]
+$else$
+\setmainfont{lmroman10-regular.otf}[
+  BoldFont=lmroman10-bold.otf,
+  ItalicFont=lmroman10-italic.otf,
+  BoldItalicFont=lmroman10-bolditalic.otf,
+  SmallCapsFont=lmromancaps10-regular.otf
+]
+$endif$
+\setsansfont{lmsans10-regular.otf}[
+  BoldFont=lmsans10-bold.otf,
+  ItalicFont=lmsans10-oblique.otf,
+  BoldItalicFont=lmsans10-boldoblique.otf
+]
+$if(monofont)$
+\setmonofont{$monofont$}[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$]
+$else$
+\setmonofont{lmmono10-regular.otf}[
+  BoldFont=lmmonolt10-bold.otf,
+  ItalicFont=lmmono10-italic.otf,
+  BoldItalicFont=lmmonolt10-boldoblique.otf
+]
+$endif$
+\usepackage[english,italian,main=$if(babel-lang)$$babel-lang$$else$italian$endif$]{babel}
+\usepackage{microtype}
+
+% Preserve the original A4 layout, colours and ragged-right body.
+\usepackage[a4paper,margin=2.5cm,headheight=28pt]{geometry}
+\usepackage{setspace}
+\setstretch{$if(linestretch)$$linestretch$$else$1.08$endif$}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em plus 0.1em minus 0.05em}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+
+% TEXINPUTS should contain only this template's root, without //.
+\input{style/packages.tex}
+$if(mathfont)$
+\setmathfont{$mathfont$}[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]
+$else$
+\setmathfont{latinmodern-math.otf}
+$endif$
+\input{style/colors.tex}
+\input{style/commands.tex}
+\input{style/boxes.tex}
+\input{style/pandoc-support.tex}
+
+$if(numbersections)$
+\setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$3$endif$}
+$else$
+\setcounter{secnumdepth}{-2}
+$endif$
+\setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$2$endif$}
+$if(toc-title)$
+\AddToHook{begindocument/end}{\renewcommand{\contentsname}{$toc-title$}}
+$endif$
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+$if(strikeout)$
+\usepackage{luacolor}
+\usepackage[soul]{lua-ul}
+$endif$
+$if(csl-refs)$
+\input{style/citations.tex}
+$endif$
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% PDF metadata is separate from visible title-page typography.
+$if(title)$
+\hypersetup{pdftitle={$title$}}
+$endif$
+$if(author)$
+\hypersetup{pdfauthor={$for(author)$$author$$sep$, $endfor$}}
+$endif$
+
+\begin{document}
+\pagestyle{empty}
+% The four cover pages have no PDF page anchors. Front matter does.
+\hypersetup{pageanchor=false}
+
+$if(title)$
+% Cover. Avoid titlepage's page-counter resets.
+\thispagestyle{empty}
+\drawcoverborder
+\begin{center}
+  \vspace*{\fill}
+  \begin{minipage}{0.88\textwidth}
+    \centering
+    \covertitle{$title$}
+    $if(subtitle)$
+    \vspace{1em}
+    {\Large $subtitle$\par}
+    $endif$
+    $if(author)$
+    \vspace{2em}
+    {\Large $for(author)$$author$$sep$ \\ $endfor$\par}
+    $endif$
+    $if(date)$
+    \vspace{1em}
+    {\large $date$\par}
+    $endif$
+  \end{minipage}
+  \vspace*{\fill}
+\end{center}
+\clearpage
+\blankpage
+
+% Frontispiece.
+\thispagestyle{empty}
+\begin{center}
+  \vspace*{\fill}
+  {\Huge\bfseries $title$\par}
+  $if(subtitle)$
+  \vspace{1em}
+  {\Large $subtitle$\par}
+  $endif$
+  \vspace*{\fill}
+\end{center}
+\clearpage
+
+% Colophon on the reverse of the frontispiece.
+\thispagestyle{empty}
+\null\vfill
+{\small
+  \begin{flushleft}
+    $if(colophon-text)$$colophon-text$$else$\defaultcolophontext$endif$\par
+  \end{flushleft}
+  \vfill
+  \begin{flushleft}
+    $if(author)$
+    Copyright © $if(copyright-year)$$copyright-year$$elseif(year)$$year$$endif$ $for(author)$$author$$sep$, $endfor$\par
+    $endif$
+    $if(license)$
+    \licensename: $license$\par
+    $endif$
+  \end{flushleft}
+}
+\clearpage
+$endif$
+
+% Use book's native roman front matter and arabic main matter.
+\frontmatter
+\hypersetup{pageanchor=true}
+\pagestyle{frontmattersection}
+
+$if(preface)$
+\chapter*{$if(preface-title)$$preface-title$$else$\prefacename$endif$}
+\addcontentsline{toc}{chapter}{$if(preface-title)$$preface-title$$else$\prefacename$endif$}
+\markboth{\headertitle{$if(preface-title)$$preface-title$$else$\prefacename$endif$}}{}
+$preface$
+$endif$
+
+$if(dedication)$
+\handoutsclearchapterpage
+\thispagestyle{plain}
+\markboth{}{}
+\null\vfill
+\begin{center}
+  \begin{minipage}{0.8\textwidth}
+    \centering\itshape
+    $dedication$
+  \end{minipage}
+\end{center}
+\vfill\null
+$endif$
+
+$if(epigraph)$
+\handoutsclearchapterpage
+\thispagestyle{plain}
+\markboth{}{}
+\null\vfill
+\begin{flushright}
+  \begin{minipage}{0.72\textwidth}
+    \itshape\raggedleft
+    $epigraph$
+    $if(epigraph-author)$
+    \par\medskip
+    --- \textnormal{\textsc{$epigraph-author$}}
+    $endif$
+  \end{minipage}
+\end{flushright}
+\vfill\null
+$endif$
+
+$if(toc)$
+\tableofcontents
+$endif$
+$if(lof)$
+\listoffigures
+$endif$
+$if(lot)$
+\listoftables
+$endif$
+
+% Leave at least one empty page after the contents before the main text.
+% book's \mainmatter adds a second blank if needed for a recto opening.
+$if(toc)$
+\clearpage
+\blankpage
+$endif$
+
+\mainmatter
+\pagestyle{mainmatter}
+\RaggedRight
+$for(include-before)$
+$include-before$
+$endfor$
+
+$body$
+
+$for(include-after)$
+$include-after$
+$endfor$
+\end{document}

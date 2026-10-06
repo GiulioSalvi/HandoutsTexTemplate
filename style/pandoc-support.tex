@@ -1,0 +1,26 @@
+% HandoutsTexTemplate
+% Copyright (C) 2026 Giulio Salvi
+%
+% This is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% This software is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+% Pandoc's current LaTeX writer wraps automatically sized images in this macro.
+% adjustbox limits width and total height while preserving the aspect ratio.
+\NewDocumentCommand{\pandocbounded}{m}{%
+  \begin{adjustbox}{max totalsize={\linewidth}{0.9\textheight}}%
+    #1%
+  \end{adjustbox}%
+}
+\ProvideDocumentCommand{\tightlist}{}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}%
+}

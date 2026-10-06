@@ -1,0 +1,6 @@
+# TeX & Local Files
+*.aux
+*.log
+*.toc
+*.out
+.DS_Store

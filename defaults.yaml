@@ -1,0 +1,4 @@
+standalone: true
+pdf-engine: lualatex
+top-level-division: chapter
+template: '${.}/template.tex'

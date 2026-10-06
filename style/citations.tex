@@ -1,0 +1,46 @@
+% HandoutsTexTemplate
+% Copyright (C) 2026 Giulio Salvi
+%
+% This is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% This software is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+% Citeproc's CSL interface, following Pandoc's default common.latex partial.
+\NewDocumentCommand{\citeproctext}{}{}
+\NewDocumentCommand{\citeproc}{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup
+}
+\makeatletter
+\let\@cite@ofmt\@firstofone
+\def\@biblabel#1{}
+\def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\NewDocumentEnvironment{CSLReferences}{m m}{%
+  \begin{list}{}{%
+    \setlength{\itemindent}{0pt}
+    \setlength{\leftmargin}{0pt}
+    \setlength{\parsep}{0pt}
+    \ifodd #1
+      \setlength{\leftmargin}{\cslhangindent}
+      \setlength{\itemindent}{-\cslhangindent}
+    \fi
+    \setlength{\itemsep}{#2\baselineskip}%
+  }%
+}{\end{list}}
+\NewDocumentCommand{\CSLBlock}{m}{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\NewDocumentCommand{\CSLLeftMargin}{m}{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\NewDocumentCommand{\CSLRightInline}{m}{\parbox[t]{\linewidth-\csllabelwidth}{\strut#1\strut}}
+\NewDocumentCommand{\CSLIndent}{m}{\hspace{\cslhangindent}#1}

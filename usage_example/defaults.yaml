@@ -1,0 +1,16 @@
+# Run Pandoc from the template root, or use this defaults file by absolute path.
+from: markdown+raw_tex
+to: latex
+
+input-file: '${.}/example-pandoc.md'
+output-file: '${.}/example-pandoc.pdf'
+
+number-sections: true
+table-of-contents: true
+toc-depth: 3
+
+resource-path:
+  - '${.}/..'
+
+variables:
+  fontsize: 11pt

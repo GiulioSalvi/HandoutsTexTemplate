@@ -1,0 +1,68 @@
+% HandoutsTexTemplate
+% Copyright (C) 2026 Giulio Salvi
+%
+% This is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+
+% This software is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+% Graphics, diagrams and optional SVG support.
+\usepackage{xcolor,graphicx,adjustbox}
+\usepackage{float,caption,subcaption,wrapfig}
+\usepackage{svg}
+\usepackage{etoolbox,centernot}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,shapes,trees,fit,backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Native Unicode maths, with mathtools loaded before unicode-math.
+\usepackage{mathtools,amsthm}
+% Deliberately keep mathtools' brackets and unicode-math's colon symbols.
+% Silence only the two informational notices about this documented combination.
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+% Preserve the familiar AMS spelling for the proof-ending symbol.
+\ProvideDocumentCommand{\square}{}{\mdlgwhtsquare}
+
+% Tables emitted by Pandoc and handwritten tabular material.
+\usepackage{array,booktabs,longtable,tabularx,multirow,calc}
+\usepackage{footnotehyper}
+\makesavenoteenv{longtable}
+\captionsetup[table]{skip=6pt}
+\newcounter{none}
+
+% Algorithms keep their existing public commands.
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\DontPrintSemicolon
+\SetAlgoLined
+\SetAlgoNoEnd
+\LinesNumbered
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetKw{Return}{return}
+\SetKw{True}{True}
+\SetKw{False}{False}
+
+% The original semantic-box palette and icons.
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+
+% Book layout. Empty verso pages must also have empty headers/footers.
+\usepackage{fancyhdr,ragged2e,titlesec,emptypage}
+\usepackage{fancyvrb,framed}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage[english,italian,nameinlink,capitalise,noabbrev]{cleveref}
+% Reapply Babel's current language after cleveref's initial-language setup.
+% This also runs our caption hooks and keeps all reference names consistent.
+\AddToHook{begindocument/end}{%
+  \expandafter\selectlanguage\expandafter{\languagename}%
+}
