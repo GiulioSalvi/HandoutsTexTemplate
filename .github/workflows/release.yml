@@ -1,0 +1,81 @@
+name: Publish template release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing stable release tag (vX.Y.Z)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: template-release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  package-test-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out the exact release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Package the tagged runtime tree
+        run: python3 scripts/package-release.py --tag "$RELEASE_TAG" --output dist
+      - name: Install the compilation toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            pandoc python3 texlive-luatex texlive-latex-extra texlive-fonts-extra \
+            texlive-lang-english texlive-lang-italian texlive-science
+      - name: Compile with the extracted package
+        run: sh scripts/smoke-test.sh "dist/handouts-${RELEASE_TAG#v}.tar.gz"
+      - name: Publish through a draft or verify the existing published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/publish-release.sh "$RELEASE_TAG" dist
+      - name: Notify the template library
+        env:
+          LIBRARY_REPOSITORY: ${{ vars.LIBRARY_REPOSITORY }}
+          GH_TOKEN: ${{ secrets.LIBRARY_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$LIBRARY_REPOSITORY" ]; then
+            echo 'LIBRARY_REPOSITORY is unset; the child release is published and library notification is skipped.'
+            echo 'Library notification skipped: configure LIBRARY_REPOSITORY to enable it.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ -z "$GH_TOKEN" ]; then
+            echo 'LIBRARY_REPOSITORY is configured but LIBRARY_DISPATCH_TOKEN is missing. Set a PAT/App token with Contents: write on the library repository.' >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          repository = os.environ['LIBRARY_REPOSITORY']
+          if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository):
+              raise SystemExit('LIBRARY_REPOSITORY must be owner/repository.')
+          tag = os.environ['RELEASE_TAG']
+          metadata = json.loads(Path(f'dist/handouts-{tag[1:]}.json').read_text())
+          Path(os.environ['RUNNER_TEMP'], 'library-dispatch.json').write_text(json.dumps({
+              'event_type': 'template-released',
+              'client_payload': {
+                  'id': metadata['id'], 'tag': metadata['tag'], 'commit': metadata['commit'],
+              },
+          }) + '\n')
+          PY
+          gh api --method POST "repos/$LIBRARY_REPOSITORY/dispatches" \
+            --input "$RUNNER_TEMP/library-dispatch.json"
+          echo "Notified $LIBRARY_REPOSITORY of handouts $RELEASE_TAG." >> "$GITHUB_STEP_SUMMARY"

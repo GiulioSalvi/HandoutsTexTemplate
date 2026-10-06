@@ -44,10 +44,10 @@ Run the following commands from the root of this repository:
 ```sh
 mkdir -p build
 TEXINPUTS="$PWD:" pandoc \
-  --defaults=usage_example/pandoc.yaml \
+  --defaults=defaults.yaml \
+  --defaults=usage_example/defaults.yaml \
   --template=template.tex \
   --pdf-engine=lualatex \
-  usage_example/example-pandoc.md \
   -o build/example.pdf
 ```
 
@@ -60,9 +60,9 @@ To inspect the generated LaTeX or use `latexmk` for subsequent builds:
 ```sh
 mkdir -p build
 pandoc \
-  --defaults=usage_example/pandoc.yaml \
+  --defaults=defaults.yaml \
+  --defaults=usage_example/defaults.yaml \
   --template=template.tex \
-  usage_example/example-pandoc.md \
   -o build/example.tex
 
 TEXINPUTS="$PWD:" latexmk \
@@ -79,7 +79,7 @@ Pandoc must expand these before LaTeX compilation.
 ## Usage
 
 Keep each course's Markdown, assets, and build configuration in its own
-project. Start from [`usage_example/pandoc.yaml`](usage_example/pandoc.yaml)
+project. Start from [`usage_example/defaults.yaml`](usage_example/defaults.yaml)
 and customise the source, output, and document options. For example:
 
 ```yaml
@@ -101,11 +101,11 @@ variables:
 `${.}` refers to the directory containing the defaults file. Define
 `TEX_TEMPLATE_PATH` as the path to this repository's `template.tex`, and put
 the repository root in `TEXINPUTS` for the build process. From the course
-project, for a template installed at `~/.tex_templates/handouts_template`:
+project, for a template installed at `~/.tex_templates/templates/handouts`:
 
 ```sh
-TEX_TEMPLATE_PATH="$HOME/.tex_templates/handouts_template/template.tex" \
-TEXINPUTS="$HOME/.tex_templates/handouts_template:" \
+TEX_TEMPLATE_PATH="$HOME/.tex_templates/templates/handouts/template.tex" \
+TEXINPUTS="$HOME/.tex_templates/templates/handouts:" \
 pandoc --defaults=pandoc.yaml
 ```
 
@@ -191,12 +191,12 @@ As stated in \cref{def:continuity}, ...
 ```
 
 Numbered environments are `propertybox`, `definitionbox`, `theorembox`,
-`axiombox`, `lemmabox`, and `observationbox`. Their numbers share one sequence
+`axiombox`, `lemmabox`, `observationbox`, and `tipbox`. Their numbers share one sequence
 per chapter: `1.1`, `1.2`, and so on, restarting at `2.1` in the next chapter.
 Sections do not restart that sequence. Place numbered boxes inside numbered
 chapters. `\cref` preserves the type of the referenced box.
 
-Additional environments include `tipbox`, `proofsection`,
+Additional environments include `proofsection`,
 `timeanalysissection`, and `sidebarsection`. Examples of boxes, algorithms,
 custom lists, diagrams, images, and appendices are provided in
 [`usage_example/example-pandoc.md`](usage_example/example-pandoc.md).
@@ -222,9 +222,20 @@ Lua filters use its embedded Lua interpreter.
 ## Repository layout
 
 ```text
-handouts_template/
+handouts/
 ├── README.md
 ├── LICENSE
+├── defaults.yaml
+├── environment.sh
+├── requirements.txt
+├── .gitattributes
+├── .github/workflows/
+│   ├── ci.yml
+│   └── release.yml
+├── scripts/
+│   ├── package-release.py
+│   ├── publish-release.sh
+│   └── smoke-test.sh
 ├── template.tex
 ├── style/
 │   ├── packages.tex
@@ -234,7 +245,7 @@ handouts_template/
 │   ├── pandoc-support.tex
 │   └── citations.tex
 └── usage_example/
-    ├── pandoc.yaml
+    ├── defaults.yaml
     ├── example-pandoc.md
     ├── example-pandoc.pdf
     └── assets/
@@ -259,3 +270,61 @@ source-file notices. See [`LICENSE`](LICENSE) for the full licence text.
 - [Standard LaTeX classes](https://www.latex-project.org/help/documentation/classes.pdf)
 - [fontspec](https://ctan.org/pkg/fontspec)
 - [GNU GPL version 3](https://www.gnu.org/licenses/gpl-3.0.html)
+
+
+## Release automation
+
+The CI packages the selected Git tree and compiles the example against the
+extracted package. The development example remains in the Git repository;
+release archives exclude it, `.gitignore`, `.gitattributes`, `.github`, and
+maintenance scripts according to `.gitattributes`.
+
+Push a stable three-part version tag to publish a release:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow creates these assets:
+
+- `handouts-X.Y.Z.tar.gz`, whose top-level directory is `handouts/`;
+- `handouts-X.Y.Z.json`, describing the repository, tag, full commit, archive
+  filename, and SHA256;
+- `SHA256SUMS` for both assets.
+
+Archives are generated from the exact tagged commit. The workflow attaches
+assets to a draft before publishing, so it works with optional GitHub release
+immutability. Rerunning the workflow verifies an existing published release
+and can resend its library notification without replacing published assets.
+
+To notify a parent library after publication, configure these values under
+**Settings → Secrets and variables → Actions** in this repository:
+
+- Repository variable `LIBRARY_REPOSITORY`: the full name of the parent
+  repository, for example `GiulioSalvi/TexTemplates`.
+- Repository secret `LIBRARY_DISPATCH_TOKEN`: a fine-grained PAT with access to
+  that parent repository and **Contents: Read and write**. This credential is
+  used only to send the cross-repository notification.
+
+The receiving parent workflow must exist on its default branch and accept the
+`template-released` repository-dispatch event. The payload identifies the
+released template ID, tag, and full commit. If `LIBRARY_REPOSITORY` is unset,
+the template still publishes independently and skips notification. If it is
+set, a missing dispatch secret is reported as a configuration error.
+
+Install and push the workflow changes before creating the first version tag.
+To retry an existing tag, use **Actions → Publish template release → Run
+workflow** and supply that tag.
+
+For local packaging from a committed version tag:
+
+```sh
+python3 scripts/package-release.py --tag v0.1.0 --output dist
+sh scripts/smoke-test.sh dist/handouts-0.1.0.tar.gz
+```
+
+The smoke test needs Pandoc and LuaLaTeX. It creates a temporary installation,
+compiles with the extracted runtime template, and removes its temporary files.
+
+The example source is available in the [GitHub development checkout](https://github.com/GiulioSalvi/HandoutsTexTemplate/tree/main/usage_example).
