@@ -48,3 +48,14 @@ case "$TEXINPUTS" in
     *) TEXINPUTS=$TEXINPUTS: ;;
 esac
 export TEXINPUTS
+
+# Components are separate from selectable document templates.
+library_root=${TEX_TEMPLATES_HOME:-$(dirname -- "$(dirname -- "$TEX_TEMPLATE_HOME")")}
+for component in "$library_root"/components/*; do
+    [ -d "$component" ] || continue
+    case ":$TEXINPUTS:" in
+        *":$component:"*) ;;
+        *) TEXINPUTS=$component:$TEXINPUTS ;;
+    esac
+done
+export TEXINPUTS

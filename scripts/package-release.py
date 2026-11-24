@@ -38,7 +38,7 @@ COMMIT_PATTERN = re.compile(r"[0-9a-f]{40}\Z")
 REQUIRED_FILES = {
     "README.md", "LICENSE", "environment.sh", "defaults.yaml",
     "requirements.txt", "template.tex", "style/packages.tex",
-    "style/colors.tex", "style/commands.tex", "style/boxes.tex",
+    "style/colors.tex", "style/commands.tex",
     "style/pandoc-support.tex", "style/citations.tex",
 }
 ROOT_FILES = {name for name in REQUIRED_FILES if "/" not in name}

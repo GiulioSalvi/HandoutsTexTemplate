@@ -328,3 +328,11 @@ The smoke test needs Pandoc and LuaLaTeX. It creates a temporary installation,
 compiles with the extracted runtime template, and removes its temporary files.
 
 The example source is available in the [GitHub development checkout](https://github.com/GiulioSalvi/HandoutsTexTemplate/tree/main/usage_example).
+
+## Shared box component
+
+Semantic box definitions and their palette are provided by `components/boxes` in the parent TeX Templates library. This template requires `tt-boxes.sty`; its own archive contains the book layout and does not duplicate component sources. The library archive/image installs both together and combines their TeX Live requirements.
+
+For a standalone template checkout/package, set `TEX_TEMPLATES_HOME` to an installed library before sourcing `environment.sh`. The hook adds installed component roots to `TEXINPUTS`. Direct custom builds must make `tt-boxes.sty` available in the same way. Child CI checks the shared components out separately from the parent repository.
+
+Image caption labels follow the `lang` metadata (`en` for Figure, `it` for Figura).

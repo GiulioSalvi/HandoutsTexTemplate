@@ -27,32 +27,6 @@
   {\Huge\bfseries #1\par}%
 }
 
-% Keep box titles and counter tags on the same line.
-\newcommand{\boxtitle}[2]{#1\hspace{0.55em}#2}
-\newcommand{\boxcountertag}[1]{%
-  \hfill\nobreak\mbox{\normalfont #1}%
-}
-\newcommand{\boxtitlewithlabel}[3]{%
-  \boxtitle{#1}{#2}\boxcountertag{#3}%
-}
-\newcommand{\boxplainwithlabel}[2]{%
-  #1\boxcountertag{#2}%
-}
-\newcommand{\boxtitlewithname}[4]{%
-  \ifstrempty{#3}{%
-    \boxtitlewithlabel{#1}{#2}{#4}%
-  }{%
-    \boxtitlewithlabel{#1}{#2 of #3}{#4}%
-  }%
-}
-\newcommand{\boxtitleorfallback}[4]{%
-  \ifstrempty{#3}{%
-    \boxtitlewithlabel{#1}{#2}{#4}%
-  }{%
-    \boxtitlewithlabel{#1}{#3}{#4}%
-  }%
-}
-
 % A deliberate blank page is used only behind the cover.
 \NewDocumentCommand{\blankpage}{}{%
   \thispagestyle{empty}\null\clearpage
@@ -149,16 +123,6 @@
   \renewcommand{\headrulewidth}{0pt}
   \renewcommand{\footrulewidth}{0pt}
 }
-
-% Forward optional titles and options to box environments.
-\NewDocumentCommand{\beginbox}{m O{} g}{%
-  \ifstrempty{#2}{%
-    \IfNoValueTF{#3}{\begin{#1}}{\begin{#1}{#3}}%
-  }{%
-    \IfNoValueTF{#3}{\begin{#1}[#2]}{\begin{#1}[#2]{#3}}%
-  }%
-}
-\NewDocumentCommand{\endbox}{m}{\end{#1}}
 
 % Mathtools paired delimiters keep the existing auto-sized shorthand syntax.
 \NewDocumentCommand{\bal}{m}{\mathrm{bal}(#1)}

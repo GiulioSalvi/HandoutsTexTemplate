@@ -18,6 +18,14 @@ if [ "$#" -ne 1 ]; then
     exit 2
 fi
 repository=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if [ -z "${TEX_TEMPLATES_HOME:-}" ]; then
+    TEX_TEMPLATES_HOME=$(CDPATH= cd "$repository/../.." && pwd)
+    export TEX_TEMPLATES_HOME
+fi
+if [ ! -f "$TEX_TEMPLATES_HOME/components/boxes/tt-boxes.sty" ]; then
+    printf 'Set TEX_TEMPLATES_HOME to a library containing components/boxes.\n' >&2
+    exit 1
+fi
 archive=$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).resolve())' "$1")
 workspace=$(mktemp -d "${TMPDIR:-/tmp}/handouts-smoke.XXXXXXXX")
 trap 'rm -rf -- "$workspace"' EXIT HUP INT TERM

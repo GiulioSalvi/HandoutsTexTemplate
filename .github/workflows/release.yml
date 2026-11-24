@@ -33,6 +33,13 @@ jobs:
           persist-credentials: false
       - name: Package the tagged runtime tree
         run: python3 scripts/package-release.py --tag "$RELEASE_TAG" --output dist
+      - name: Check out shared TeX components from the library
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: GiulioSalvi/TexTemplates
+          path: .ci/tex-templates
+          sparse-checkout: components
+          persist-credentials: false
       - name: Install the compilation toolchain
         run: |
           sudo apt-get update
@@ -40,6 +47,8 @@ jobs:
             pandoc python3 texlive-luatex texlive-latex-extra texlive-fonts-extra \
             texlive-lang-english texlive-lang-italian texlive-science
       - name: Compile with the extracted package
+        env:
+          TEX_TEMPLATES_HOME: ${{ github.workspace }}/.ci/tex-templates
         run: sh scripts/smoke-test.sh "dist/handouts-${RELEASE_TAG#v}.tar.gz"
       - name: Publish through a draft or verify the existing published release
         env:

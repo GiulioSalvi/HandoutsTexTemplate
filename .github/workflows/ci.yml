@@ -19,6 +19,13 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Check out shared TeX components from the library
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: GiulioSalvi/TexTemplates
+          path: .ci/tex-templates
+          sparse-checkout: components
+          persist-credentials: false
       - name: Install the compilation toolchain
         run: |
           sudo apt-get update
@@ -31,6 +38,8 @@ jobs:
           git tag --force v0.0.0 HEAD
           python3 scripts/package-release.py --tag v0.0.0 --output dist
       - name: Compile with the extracted package
+        env:
+          TEX_TEMPLATES_HOME: ${{ github.workspace }}/.ci/tex-templates
         run: sh scripts/smoke-test.sh dist/handouts-0.0.0.tar.gz
       - name: Save the tested runtime package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
