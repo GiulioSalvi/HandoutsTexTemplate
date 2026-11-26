@@ -125,8 +125,11 @@ With `top-level-division: chapter`, use the following hierarchy:
 | `### Properties` | Subsection |
 | `#### Further details` | Subsubsection |
 
-Parts and chapters have their own opening pages. Chapter numbering continues
-across parts. Insert `\appendix` before appendix chapters to obtain lettered
+Parts and chapters have their own opening pages. Every part, including starred
+parts, starts on a right-hand page facing a completely blank left-hand page.
+Existing blank pages are reused, including after the contents and between
+consecutive parts. This also applies with `openany: true`; that option changes
+chapter openings only. Chapter numbering continues across parts. Insert `\appendix` before appendix chapters to obtain lettered
 chapter numbers and corresponding box numbers.
 
 With this hierarchy, `toc-depth: 3` includes subsections in the table of

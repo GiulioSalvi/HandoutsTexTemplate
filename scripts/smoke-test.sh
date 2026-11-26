@@ -62,3 +62,6 @@ if pdf.stat().st_size < 1000 or not pdf.read_bytes().startswith(b"%PDF-"):
     raise SystemExit("Smoke compilation did not produce a valid PDF.")
 print(f"Extracted-package smoke test passed ({pdf.stat().st_size} bytes).")
 PY
+
+# Check the extracted template, including part openings across numbering resets.
+python3 "$repository/scripts/check-part-openings.py" "$TEX_TEMPLATE_HOME"

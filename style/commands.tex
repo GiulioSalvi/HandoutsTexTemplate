@@ -27,10 +27,41 @@
   {\Huge\bfseries #1\par}%
 }
 
-% A deliberate blank page is used only behind the cover.
-\NewDocumentCommand{\blankpage}{}{%
-  \thispagestyle{empty}\null\clearpage
+% Remember known blank pages by absolute shipout, independently of roman/arabic
+% page-number resets. Reuse an existing blank verso when opening a part.
+\newcount\handoutslastblankshipout
+\handoutslastblankshipout=-1\relax
+\NewDocumentCommand{\handoutsrecordblankpage}{}{%
+  \global\handoutslastblankshipout=\ReadonlyShipoutCounter\relax
 }
+\NewDocumentCommand{\blankpage}{}{%
+  \clearpage
+  \thispagestyle{empty}\null\clearpage
+  \handoutsrecordblankpage
+}
+
+% Track the blank pages supplied by emptypage and book's part reverses too.
+\AddToHook{cmd/emptypage@emptypage/after}{\handoutsrecordblankpage}
+\makeatletter
+\AddToHook{cmd/@endpart/after}{%
+  \if@twoside\if@openright\handoutsrecordblankpage\fi\fi
+}
+\makeatother
+
+% Each part opens recto with a completely blank facing verso. Flush floats
+% first, then insert one or two blank pages only if the previous verso is used.
+\NewDocumentCommand{\handoutsclearpartpage}{}{%
+  \clearpage
+  \ifodd\value{page}\relax
+    \ifnum\handoutslastblankshipout=\ReadonlyShipoutCounter\relax
+    \else
+      \blankpage\blankpage
+    \fi
+  \else
+    \blankpage
+  \fi
+}
+\AddToHook{cmd/part/before}{\handoutsclearpartpage}
 
 % Native book opening policy, also used by dedication and epigraph pages.
 \makeatletter

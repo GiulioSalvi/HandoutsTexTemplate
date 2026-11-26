@@ -30,7 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends \
-            pandoc python3 texlive-luatex texlive-latex-extra texlive-fonts-extra \
+            pandoc python3 python3-pypdf texlive-luatex texlive-latex-extra texlive-fonts-extra \
             texlive-lang-english texlive-lang-italian texlive-science
       - name: Package this commit without requiring a first published release
         run: |
