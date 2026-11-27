@@ -9,8 +9,8 @@ for definitions, theorems, proofs, and other structured material.
 
 ## Features
 
-- Parts, chapters, sections, and subsections, with chapter openings on right-hand
-  pages by default.
+- Parts, chapters, sections, and subsections. By default, parts and chapters
+  open on right-hand pages facing completely blank left-hand pages.
 - A cover, title page, and colophon, plus optional preface, dedication, and
   epigraph.
 - Roman page numbers for preliminary material and Arabic page numbers for the
@@ -125,12 +125,18 @@ With `top-level-division: chapter`, use the following hierarchy:
 | `### Properties` | Subsection |
 | `#### Further details` | Subsubsection |
 
-Parts and chapters have their own opening pages. Every part, including starred
-parts, starts on a right-hand page facing a completely blank left-hand page.
-Existing blank pages are reused, including after the contents and between
-consecutive parts. This also applies with `openany: true`; that option changes
-chapter openings only. Chapter numbering continues across parts. Insert `\appendix` before appendix chapters to obtain lettered
-chapter numbers and corresponding box numbers.
+Parts and chapters have their own opening pages. By default, every opening
+faces a completely blank left-hand page, including starred or unnumbered
+chapters, appendices, and preliminary sections. Pending floats are flushed
+before determining which blank pages are needed. Existing blank pages are
+reused, including after the contents and between a part and its first chapter;
+no leading blank pages are added before the very first page of a document.
+
+`openany: true` explicitly opts out of this separation for chapters and
+preliminary sections; parts always retain their blank-facing right-hand
+openings. Chapter numbering continues across parts. Insert `\appendix` before
+appendix chapters to obtain lettered chapter numbers and corresponding box
+numbers.
 
 With this hierarchy, `toc-depth: 3` includes subsections in the table of
 contents. Use `toc-depth: 4` to include subsubsections as well.

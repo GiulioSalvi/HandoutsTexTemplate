@@ -171,6 +171,9 @@ $if(title)$
 $endif$
 
 % Use book's native roman front matter and arabic main matter.
+% Prepare the facing verso before resetting the counter: the first preliminary
+% page must still be numbered i, even when blanks follow a used colophon.
+\handoutsclearchapterpage
 \frontmatter
 \hypersetup{pageanchor=true}
 \pagestyle{frontmattersection}

@@ -63,5 +63,5 @@ if pdf.stat().st_size < 1000 or not pdf.read_bytes().startswith(b"%PDF-"):
 print(f"Extracted-package smoke test passed ({pdf.stat().st_size} bytes).")
 PY
 
-# Check the extracted template, including part openings across numbering resets.
-python3 "$repository/scripts/check-part-openings.py" "$TEX_TEMPLATE_HOME"
+# Check extracted part/chapter openings, floats, and preliminary/main matter.
+python3 "$repository/scripts/check-page-openings.py" "$TEX_TEMPLATE_HOME"

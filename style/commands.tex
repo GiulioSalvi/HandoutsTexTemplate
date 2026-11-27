@@ -28,7 +28,7 @@
 }
 
 % Remember known blank pages by absolute shipout, independently of roman/arabic
-% page-number resets. Reuse an existing blank verso when opening a part.
+% page-number resets. Reuse an existing blank verso before a new opening.
 \newcount\handoutslastblankshipout
 \handoutslastblankshipout=-1\relax
 \NewDocumentCommand{\handoutsrecordblankpage}{}{%
@@ -48,27 +48,31 @@
 }
 \makeatother
 
-% Each part opens recto with a completely blank facing verso. Flush floats
-% first, then insert one or two blank pages only if the previous verso is used.
-\NewDocumentCommand{\handoutsclearpartpage}{}{%
+% Open recto with a completely blank facing verso. Flush pending floats before
+% checking parity; at the start of a document no facing page needs inserting.
+\NewDocumentCommand{\handoutsclearopeningpage}{}{%
   \clearpage
-  \ifodd\value{page}\relax
-    \ifnum\handoutslastblankshipout=\ReadonlyShipoutCounter\relax
+  \ifnum\ReadonlyShipoutCounter>0\relax
+    \ifodd\value{page}\relax
+      \ifnum\handoutslastblankshipout=\ReadonlyShipoutCounter\relax
+      \else
+        \blankpage\blankpage
+      \fi
     \else
-      \blankpage\blankpage
+      \blankpage
     \fi
-  \else
-    \blankpage
   \fi
 }
-\AddToHook{cmd/part/before}{\handoutsclearpartpage}
+\AddToHook{cmd/part/before}{\handoutsclearopeningpage}
 
-% Native book opening policy, also used by dedication and epigraph pages.
+% Apply the same separation to numbered/starred chapters and preliminary
+% sections. openany remains an explicit opt-out for chapters, but not parts.
 \makeatletter
 \NewDocumentCommand{\handoutsclearchapterpage}{}{%
-  \if@openright\cleardoublepage\else\clearpage\fi
+  \if@openright\handoutsclearopeningpage\else\clearpage\fi
 }
 \makeatother
+\AddToHook{cmd/chapter/before}{\handoutsclearchapterpage}
 
 % Visible labels follow Babel's selected main language.
 \NewDocumentCommand{\defaultcolophontext}{}{These notes were typeset using \LaTeX{}.}
